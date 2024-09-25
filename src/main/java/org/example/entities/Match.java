@@ -18,11 +18,11 @@ import java.time.LocalDate;
 @Table(name = "tblmatch")
 public class Match extends BaseEntity {
 	
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.MERGE)
 	@JoinColumn(name = "home_team_id", referencedColumnName = "id")
 	private Team homeTeam;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "away_team_id", referencedColumnName = "id")
 	private Team awayTeam;
 
@@ -31,7 +31,7 @@ public class Match extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private EMatchStatus status;
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.MERGE)
 	@JoinColumn(name = "league_id", referencedColumnName = "id")
     private League league;
 

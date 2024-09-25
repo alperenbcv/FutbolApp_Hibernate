@@ -69,4 +69,5 @@ public class MatchService extends ServiceManager<Match, Integer>  {
 		}
 		return new ArrayList<>();
 	}
+	
 }

@@ -12,6 +12,7 @@ import org.example.utility.MatchEngine;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -156,6 +157,7 @@ public class MatchModule {
 	private static void skipDay() {
 		Integer i = simulateGames();
 		System.out.println("\n"+i + " games simulated" );
+		updateTeamStats();
 		currentDate = currentDate.plusDays(1);
 		saveDatesToFile();
 		System.out.println("Day skipped to: " + currentDate);
@@ -185,24 +187,60 @@ public class MatchModule {
 					match.setStatus(EMatchStatus.PLAYED);
 				}
 				else {
-					
 					matchEngine.simulateMatch(match);
 					match.setStatus(EMatchStatus.PLAYED);
 				}
-				
-			}
-		}
-		List<TeamStats> all = DatabaseModels.teamStatController.findAll();
-		if(!all.isEmpty()) {
-			for (TeamStats ts : all) {
-				ts.setLastUpdateDate(currentDate);
-				DatabaseModels.teamStatController.update(ts);
 			}
 		}
 		int size = matchesOfTheDay.size();
 		return size;
 	}
-	
+	private static void updateTeamStats() {
+		List<Match> all = DatabaseModels.matchController.findAll();
+		for(Match match:all){
+			List<TeamStats> allStats = DatabaseModels.teamStatController.findAll();
+            if(match.getStatus() == EMatchStatus.PLAYED){
+	            for (TeamStats ts : allStats) {
+		            if(ts.getTeam().getId() == match.getHomeTeam().getId()){
+			            ts.setGoalScored(ts.getGoalScored()+match.getHomeTeamScore());
+						ts.setGamesPlayed(ts.getGamesPlayed()+1);
+						ts.setAverage(ts.getAverage()+(match.getHomeTeamScore()-match.getAwayTeamScore()));
+						ts.setGoalConceded(ts.getGoalConceded()+match.getAwayTeamScore());
+						if(match.getHomeTeamScore() > match.getAwayTeamScore()){
+							ts.setGamesWon(ts.getGamesWon()+1);
+							ts.setTotalPoint(ts.getTotalPoint()+3);
+						}
+						else if(match.getHomeTeamScore() < match.getAwayTeamScore()){
+                            ts.setGamesLost(ts.getGamesLost()+1);
+                        }
+						else {
+                            ts.setGamesDrawn(ts.getGamesDrawn()+1);
+							ts.setTotalPoint(ts.getTotalPoint()+1);
+                        }
+		            }
+		            else if(ts.getTeam().getId() == match.getAwayTeam().getId()){
+			            ts.setGoalScored(ts.getGoalScored()+match.getAwayTeamScore());
+			            ts.setGamesPlayed(ts.getGamesPlayed()+1);
+			            ts.setAverage(ts.getAverage()+(match.getAwayTeamScore()-match.getHomeTeamScore()));
+			            ts.setGoalConceded(ts.getGoalConceded()+match.getHomeTeamScore());
+			            if(match.getAwayTeamScore() > match.getHomeTeamScore()){
+				            ts.setGamesWon(ts.getGamesWon()+1);
+				            ts.setTotalPoint(ts.getTotalPoint()+3);
+			            }
+			            else if(match.getAwayTeamScore() < match.getHomeTeamScore()){
+				            ts.setGamesLost(ts.getGamesLost()+1);
+			            }
+			            else {
+				            ts.setGamesDrawn(ts.getGamesDrawn()+1);
+				            ts.setTotalPoint(ts.getTotalPoint()+1);
+			            }
+		            }
+					ts.setLastUpdateDate(LocalDate.now());
+					DatabaseModels.teamStatController.update(ts);
+                 }
+            }
+		}
+	}
 	private static void displayCurrentDate() {
 		System.out.println("\nCurrent Game Date: " + currentDate);
 	}

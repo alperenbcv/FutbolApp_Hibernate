@@ -18,7 +18,7 @@ public class LogInModule {
 
 	public static Manager managerLogIn() {
 		System.out.println("\nWelcome to the Football Manager App!");
-
+		loadSave();
 		System.out.println("\nPlease choose a league first!");
 		System.out.println("\n---------------Available Leagues------------------");
 		LeagueModule.displayAllLeagues();
@@ -105,7 +105,16 @@ public class LogInModule {
 			}
 		} while (true);
 	}
-
+	
+	private static void loadSave() {
+		System.out.println("\n Do you want to load saved game data? (Y/N): ");
+		String choice = sc.next();
+		sc.nextLine();
+		if (choice.equalsIgnoreCase("y")) {
+		
+		}
+	}
+	
 	public static Manager managerLogOut(){
 		loggedManager=null;
 		System.out.println("You are logged out!");

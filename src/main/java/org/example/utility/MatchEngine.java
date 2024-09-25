@@ -5,6 +5,7 @@ import org.example.entities.Ball;
 import org.example.entities.Match;
 import org.example.entities.Player;
 import org.example.entities.Team;
+import org.example.enums.EMatchStatus;
 import org.example.enums.EPosition;
 import org.example.models.DatabaseModels;
 import org.example.utility.events.CrossEvent;
@@ -137,6 +138,8 @@ public class MatchEngine {
 			
 		}
 		System.out.println("Match Ended. Final Score: Home " + match.getHomeTeamScore() + " - " + match.getAwayTeamScore()+ " Away");
+		match.setStatus(EMatchStatus.PLAYED);
+		DatabaseModels.matchController.update(match);
 	}
 	
 	

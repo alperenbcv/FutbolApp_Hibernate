@@ -24,4 +24,8 @@ public class MatchController {
     public List<Match> findAllByLeagueId(Integer leagueId) {
         return matchService.findAllByLeagueId(leagueId);
     }
+    
+    public Match update(Match match) {
+        return matchService.update(match);
+    }
 }
